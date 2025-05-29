@@ -147,7 +147,7 @@ export default function TableColumnsPage({
 	const sortedColumns = columns.sort((a, b) => a.orderIndex - b.orderIndex);
 
 	return (
-		<div>
+		<div className='p-6 '>
 			{!!menus && (
 				<h1 className="text-2xl font-bold mb-4">
 					{menus.filter((menu) => menu.tableId == tableId)[0]?.menuName}
