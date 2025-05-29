@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus } from 'lucide-react'; // Optional: install lucide-react for icons
+import { Menu as MenuIcon, Plus, X } from 'lucide-react'; // Add X icon for closing
 
 type Menu = {
 	id: number;
@@ -16,6 +16,7 @@ export default function Sidebar() {
 	const [showForm, setShowForm] = useState(false);
 	const [menuName, setMenuName] = useState('');
 	const [tableName, setTableName] = useState('');
+	const [isMobileOpen, setIsMobileOpen] = useState(false);
 
 	useEffect(() => {
 		fetchMenus();
@@ -49,15 +50,23 @@ export default function Sidebar() {
 		}
 	}
 
-	return (
-		<aside className="w-72 h-screen bg-white border-r px-4 py-6 shadow-sm">
+	const SidebarContent = (
+		<aside className="w-72 h-full bg-white border-r px-4 py-6 shadow-sm">
 			<div className="flex justify-between items-center mb-6">
 				<Link
 					href={`/`}
-					className="block   rounded-lg text-sm font-medium text-gray-700  hover:text-slate-600 transition"
+					className="block rounded-lg text-sm font-medium text-gray-700 hover:text-slate-600 transition"
 				>
 					<h2 className="text-2xl font-semibold text-gray-800">VeoWeb</h2>
 				</Link>
+				{/* Close button for mobile */}
+				<button
+					className="lg:hidden text-gray-600"
+					onClick={() => setIsMobileOpen(false)}
+					aria-label="Close menu"
+				>
+					<X className="w-6 h-6" />
+				</button>
 			</div>
 
 			{showForm && (
@@ -103,7 +112,10 @@ export default function Sidebar() {
 					))}
 					<li key={'add-menu'}>
 						<button
-							onClick={() => setShowForm(!showForm)}
+							onClick={(e) => {
+								e.stopPropagation();
+								setShowForm(!showForm);
+							}}
 							className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition w-full"
 							aria-label="Add Menu"
 						>
@@ -113,5 +125,37 @@ export default function Sidebar() {
 				</ul>
 			)}
 		</aside>
+	);
+
+	return (
+		<>
+			{/* Hamburger Button */}
+			{!isMobileOpen && (
+				<button
+					className="fixed top-4 right-4 z-50 p-2 rounded-lg  lg:hidden"
+					onClick={() => setIsMobileOpen(true)}
+					aria-label="Open menu"
+				>
+					<MenuIcon className="w-6 h-6 text-gray-800" />
+				</button>
+			)}
+
+			{/* Mobile Sidebar Overlay */}
+			{
+				<div
+					style={{
+						transform: `translateX(${isMobileOpen ? '0' : '-100%'})`,
+						transition: 'transform 0.3s ease',
+					}}
+					className="fixed inset-0 z-40 transition lg:hidden"
+					onClick={() => setIsMobileOpen(false)}
+				>
+					<div className="absolute top-0 left-0 h-full">{SidebarContent}</div>
+				</div>
+			}
+
+			{/* Desktop Sidebar */}
+			<div className="hidden lg:block h-screen">{SidebarContent}</div>
+		</>
 	);
 }
