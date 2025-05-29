@@ -16,7 +16,11 @@ type DataRow = {
 	tableId: number;
 	content: string[];
 };
-
+type Menu = {
+	id: number;
+	menuName: string;
+	tableId: number;
+};
 export default function TableColumnsPage({
 	params,
 }: {
@@ -37,7 +41,16 @@ export default function TableColumnsPage({
 
 	// Add data row inputs
 	const [newRowContent, setNewRowContent] = useState<string[]>([]);
+	const [menus, setMenus] = useState<Menu[]>([]);
 
+
+	async function fetchMenus() {
+		setLoading(true);
+		const res = await fetch('/api/menus');
+		const data = await res.json();
+		setMenus(data);
+		setLoading(false);
+	}
 	// Fetch columns & data
 	async function fetchColumns() {
 		const res = await fetch(`/api/columns?tableId=${tableId}`);
@@ -56,7 +69,7 @@ export default function TableColumnsPage({
 	async function fetchAll() {
 		setLoading(true);
 		try {
-			await Promise.all([fetchColumns(), fetchDataRows()]);
+			await Promise.all([fetchMenus(), fetchColumns(), fetchDataRows()]);
 		} catch (e) {
 			console.error(e);
 		}
@@ -135,7 +148,11 @@ export default function TableColumnsPage({
 
 	return (
 		<div>
-			<h1 className="text-2xl font-bold mb-4">Table {tableId} Data</h1>
+			{!!menus && (
+				<h1 className="text-2xl font-bold mb-4">
+					{menus.filter((menu) => menu.tableId == tableId)[0]?.menuName}
+				</h1>
+			)}
 
 			<button
 				onClick={() => setShowAddColumnForm(!showAddColumnForm)}
