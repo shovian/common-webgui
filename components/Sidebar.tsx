@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Menu as MenuIcon, Plus, X } from 'lucide-react'; // Add X icon for closing
+import { Menu as MenuIcon, Plus, X } from 'lucide-react';
 
 type Menu = {
 	id: number;
@@ -51,17 +51,18 @@ export default function Sidebar() {
 	}
 
 	const SidebarContent = (
-		<aside className="w-72 h-full bg-white border-r px-4 py-6 shadow-sm">
+		<aside className="w-72 h-full bg-white dark:bg-gray-900 border-r dark:border-gray-800 px-4 py-6 shadow-sm dark:shadow-none">
 			<div className="flex justify-between items-center mb-6">
 				<Link
 					href={`/`}
-					className="block rounded-lg text-sm font-medium text-gray-700 hover:text-slate-600 transition"
+					className="block rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-slate-600 dark:hover:text-gray-300 transition"
 				>
-					<h2 className="text-2xl font-semibold text-gray-800">VeoWeb</h2>
+					<h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+						VeoWeb
+					</h2>
 				</Link>
-				{/* Close button for mobile */}
 				<button
-					className="lg:hidden text-gray-600"
+					className="lg:hidden text-gray-600 dark:text-gray-300"
 					onClick={() => setIsMobileOpen(false)}
 					aria-label="Close menu"
 				>
@@ -75,15 +76,17 @@ export default function Sidebar() {
 						type="text"
 						placeholder="Menu Name"
 						value={menuName}
+						onClick={(e) => e.stopPropagation()}
 						onChange={(e) => setMenuName(e.target.value)}
-						className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+						className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
 					/>
 					<input
 						type="text"
 						placeholder="Table Name"
 						value={tableName}
+						onClick={(e) => e.stopPropagation()}
 						onChange={(e) => setTableName(e.target.value)}
-						className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+						className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
 					/>
 					<button
 						type="submit"
@@ -95,16 +98,20 @@ export default function Sidebar() {
 			)}
 
 			{loading ? (
-				<p className="text-gray-500 text-sm">Loading menus...</p>
+				<p className="text-gray-500 dark:text-gray-400 text-sm">
+					Loading menus...
+				</p>
 			) : menus.length === 0 ? (
-				<p className="text-gray-500 text-sm">No menus found.</p>
+				<p className="text-gray-500 dark:text-gray-400 text-sm">
+					No menus found.
+				</p>
 			) : (
 				<ul className="space-y-2">
 					{menus.map((menu) => (
 						<li key={menu.id}>
 							<Link
 								href={`/menu/${menu.id}`}
-								className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition"
+								className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition"
 							>
 								{menu.menuName}
 							</Link>
@@ -116,7 +123,7 @@ export default function Sidebar() {
 								e.stopPropagation();
 								setShowForm(!showForm);
 							}}
-							className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition w-full"
+							className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition w-full"
 							aria-label="Add Menu"
 						>
 							<Plus className="w-5 h-5" />
@@ -132,27 +139,30 @@ export default function Sidebar() {
 			{/* Hamburger Button */}
 			{!isMobileOpen && (
 				<button
-					className="fixed top-4 right-4 z-50 p-2 rounded-lg  lg:hidden"
+					className="fixed top-4 right-4 z-50 p-2 rounded-lg lg:hidden"
 					onClick={() => setIsMobileOpen(true)}
 					aria-label="Open menu"
 				>
-					<MenuIcon className="w-6 h-6 text-gray-800" />
+					<MenuIcon className="w-6 h-6 text-gray-800 dark:text-gray-200" />
 				</button>
 			)}
 
 			{/* Mobile Sidebar Overlay */}
-			{
+			<div
+				style={{
+					transform: `translateX(${isMobileOpen ? '0' : '-100%'})`,
+					transition: 'transform 0.3s ease',
+				}}
+				className="fixed inset-0 z-40 transition lg:hidden bg-black/30 dark:bg-black/50"
+				onClick={() => setIsMobileOpen(false)}
+			>
 				<div
-					style={{
-						transform: `translateX(${isMobileOpen ? '0' : '-100%'})`,
-						transition: 'transform 0.3s ease',
-					}}
-					className="fixed inset-0 z-40 transition lg:hidden"
-					onClick={() => setIsMobileOpen(false)}
+					className="absolute top-0 left-0 h-full"
+					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="absolute top-0 left-0 h-full">{SidebarContent}</div>
+					{SidebarContent}
 				</div>
-			}
+			</div>
 
 			{/* Desktop Sidebar */}
 			<div className="hidden lg:block h-screen">{SidebarContent}</div>
